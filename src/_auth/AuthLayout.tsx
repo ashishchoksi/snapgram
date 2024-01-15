@@ -11,10 +11,19 @@ const AuthLayout = () => {
         isAuth ? 
         (<Navigate to={"/"} />) : 
         (
-          <section>
-            {/* Outlet will honor child component's path */}
-            <Outlet />
-          </section>
+          <>
+            <section
+              className='flex flex-1 justify-center items-center flex-col py-10'>
+              {/* Outlet will honor child component's path */}
+              <Outlet />
+            </section>
+
+            <img 
+              src='/assets/images/side-img.svg' 
+              alt='Side bar' 
+              className='hidden xl:block h-screen w-1/2 object-cover bg-no-repeat'
+            />
+          </>
         )
       }
     </>
