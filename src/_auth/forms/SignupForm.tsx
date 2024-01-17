@@ -16,9 +16,11 @@ import { SignupValidation } from "@/lib/validations"
 import Loader from "@/components/shared/Loader"
 import { Link } from "react-router-dom"
 import { createUserAccount } from "@/lib/appwrite/api"
+import { useToast } from "@/components/ui/use-toast"
  
 const SignupForm = () => {
 
+  const { toast } = useToast();
   const isLoading: boolean = false;
 
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -32,10 +34,12 @@ const SignupForm = () => {
   })
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    const user = await createUserAccount(values)
-    console.log(user);
+    const user = await createUserAccount(values);
+    if (!user) {
+      return toast({
+        title: "Scheduled: Catch up"
+      });
+    }    
   }
   
   return (
