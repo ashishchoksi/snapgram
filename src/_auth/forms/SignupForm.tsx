@@ -15,13 +15,17 @@ import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validations"
 import Loader from "@/components/shared/Loader"
 import { Link } from "react-router-dom"
-import { createUserAccount } from "@/lib/appwrite/api"
 import { useToast } from "@/components/ui/use-toast"
+import { useCreateUserAccountMutation } from "@/lib/react-query/queriesAndMutations"
  
 const SignupForm = () => {
 
   const { toast } = useToast();
-  const isLoading: boolean = false;
+
+  // use your custom hook wrapper over api call
+  // we can rename function with ours with ':'
+  // we just call this function that takes care of lot making api call
+  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccountMutation();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -37,7 +41,7 @@ const SignupForm = () => {
     const user = await createUserAccount(values);
     if (!user) {
       return toast({
-        title: "Scheduled: Catch up"
+        title: "Error while saving user..."
       });
     }    
   }
@@ -103,7 +107,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? 
+            { isCreatingAccount ? 
             (<div className="flex-center gap-2"> <Loader /> Loading... </div>) : 
             (<div>Sign up</div>)}
           </Button>
