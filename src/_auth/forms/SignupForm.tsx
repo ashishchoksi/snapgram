@@ -14,18 +14,22 @@ import {
 import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validations"
 import Loader from "@/components/shared/Loader"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useToast } from "@/components/ui/use-toast"
-import { useCreateUserAccountMutation } from "@/lib/react-query/queriesAndMutations"
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
+import { useUserContext } from "@/context/AuthContext"
  
 const SignupForm = () => {
 
   const { toast } = useToast();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
 
   // use your custom hook wrapper over api call
   // we can rename function with ours with ':'
   // we just call this function that takes care of lot making api call
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccountMutation();
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -43,7 +47,25 @@ const SignupForm = () => {
       return toast({
         title: "Error while saving user..."
       });
-    }    
+    }
+
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password
+    });
+
+    if (!session) {
+      return toast({ title: "SignIn failed please try again!!!" });
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset();
+      navigate('/');
+    } else {
+      return toast({ title: "User is not logged in!!" });
+    }
   }
   
   return (
