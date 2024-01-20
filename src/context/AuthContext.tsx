@@ -70,8 +70,9 @@ const AuthProvider = ( { children } : { children: React.ReactNode } ) => {
         if (localCookie === null || localCookie === '[]') {
             return navigate('sign-in');
         }
+        console.log('inside the useEffect...');
         checkAuthUser();
-    });
+    }, []); // last [] is important else it will keep calling functions
 
     return (
         // it uses context api to pass user details to all the component
