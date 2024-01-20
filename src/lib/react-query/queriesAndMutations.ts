@@ -1,6 +1,6 @@
 import { INewUser } from '@/types';
 import { useMutation } from '@tanstack/react-query';
-import { createUserAccount, signInAccount } from '../appwrite/api';
+import { createUserAccount, signInAccount, signOut } from '../appwrite/api';
 
 /**
  * In order to use react-query
@@ -20,5 +20,11 @@ export const useSignInAccount = () => {
             email: string,
             password: string
         }) => signInAccount(user)
+    });
+}
+
+export const useSignOutAccount = () => {
+    return useMutation({
+        mutationFn: () => signOut()
     });
 }
